@@ -2,6 +2,8 @@
 
 A Flask web application for managing users and their personal movie lists, with automatic movie data fetching via the OMDb API.
 
+**Live demo:** [ash4code.pythonanywhere.com](http://ash4code.pythonanywhere.com)
+
 ## Features
 
 - Add and view users
