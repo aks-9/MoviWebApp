@@ -1,6 +1,9 @@
 import os
 import requests
+from dotenv import load_dotenv
 from flask import Flask, request, redirect, url_for, render_template
+
+load_dotenv()
 from data_manager import DataManager
 from models import db, Movie
 
@@ -51,8 +54,11 @@ def create_user():
 
 @app.route('/users/<int:user_id>/movies', methods=['GET'])
 def user_movies(user_id):
+    user = data_manager.get_user(user_id)
+    if user is None:
+        return render_template('404.html'), 404
     movies = data_manager.get_movies(user_id)
-    return render_template('user_movies.html', movies=movies, user_id=user_id)
+    return render_template('user_movies.html', movies=movies, user_id=user_id, user=user)
 
 
 @app.route('/users/<int:user_id>/movies', methods=['POST'])

@@ -12,6 +12,12 @@ class DataManager():
             db.session.rollback()
             raise e
 
+    def get_user(self, user_id):
+        try:
+            return db.session.get(User, user_id)
+        except Exception as e:
+            raise e
+
     def get_users(self):
         try:
             return User.query.all()

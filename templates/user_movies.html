@@ -1,39 +1,86 @@
 {% extends "base.html" %}
 
+{% block title %}{{ user.name }}'s Movies &mdash; MoviWeb{% endblock %}
+
 {% block content %}
-<h1>Movie List</h1>
+<a href="{{ url_for('index') }}" class="back-link">
+    <i class="fa-solid fa-arrow-left"></i> Back to Users
+</a>
+
+<h1>{{ user.name }}'s Movies</h1>
 
 {% if movies %}
-<ul>
+<ul class="movie-list">
     {% for movie in movies %}
-    <li>
+    <li class="movie-card">
         {% if movie.poster_url %}
-        <img src="{{ movie.poster_url }}" alt="{{ movie.name }} poster" width="100">
+        <img src="{{ movie.poster_url }}" alt="{{ movie.name }} poster" class="movie-poster">
+        {% else %}
+        <div class="poster-placeholder"><i class="fa-solid fa-clapperboard"></i></div>
         {% endif %}
-        <strong>{{ movie.name }}</strong>
-        ({{ movie.year }}) — Directed by {{ movie.director }}
 
-        <form action="{{ url_for('update_movie', user_id=user_id, movie_id=movie.id) }}" method="post" style="display:inline;">
-            <input type="text" name="name" value="{{ movie.name }}" required>
-            <input type="text" name="director" value="{{ movie.director }}">
-            <input type="number" name="year" value="{{ movie.year }}">
-            <input type="text" name="poster_url" value="{{ movie.poster_url }}">
-            <button type="submit">Update</button>
-        </form>
+        <div class="movie-body">
+            <div class="movie-title">{{ movie.name }}</div>
+            <div class="movie-meta">
+                {% if movie.year %}{{ movie.year }}{% endif %}
+                {% if movie.director %} &mdash; {{ movie.director }}{% endif %}
+            </div>
 
-        <form action="{{ url_for('delete_movie', user_id=user_id, movie_id=movie.id) }}" method="post" style="display:inline;">
-            <button type="submit">Delete</button>
-        </form>
+            <div class="movie-actions">
+                <button class="btn btn-edit" onclick="toggleEdit({{ movie.id }})">
+                    <i class="fa-solid fa-pen"></i> Edit
+                </button>
+                <form action="{{ url_for('delete_movie', user_id=user_id, movie_id=movie.id) }}" method="post">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+                </form>
+            </div>
+
+            <div class="update-form" id="edit-{{ movie.id }}">
+                <form action="{{ url_for('update_movie', user_id=user_id, movie_id=movie.id) }}" method="post">
+                    <div class="update-grid">
+                        <input type="text" name="name" value="{{ movie.name }}" placeholder="Title" required>
+                        <input type="text" name="director" value="{{ movie.director or '' }}" placeholder="Director">
+                        <input type="number" name="year" value="{{ movie.year or '' }}" placeholder="Year">
+                        <input type="text" name="poster_url" value="{{ movie.poster_url or '' }}" placeholder="Poster URL">
+                    </div>
+                    <div class="form-row">
+                        <button type="submit" class="btn btn-save">
+                            <i class="fa-solid fa-check"></i> Save
+                        </button>
+                        <button type="button" class="btn btn-edit" onclick="toggleEdit({{ movie.id }})">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </li>
     {% endfor %}
 </ul>
 {% else %}
-<p>No movies yet. Add one below!</p>
+<div class="empty-state">
+    <i class="fa-solid fa-clapperboard"></i>
+    <p>No movies yet. Add one below!</p>
+</div>
 {% endif %}
 
 <h2>Add a Movie</h2>
-<form action="{{ url_for('add_movie', user_id=user_id) }}" method="post">
-    <input type="text" name="title" placeholder="Enter movie title" required>
-    <button type="submit">Add Movie</button>
-</form>
+<div class="add-panel">
+    <form action="{{ url_for('add_movie', user_id=user_id) }}" method="post">
+        <div class="form-row">
+            <input type="text" name="title" placeholder="Enter movie title" required>
+            <button type="submit" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i> Add Movie
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+function toggleEdit(id) {
+    document.getElementById('edit-' + id).classList.toggle('open');
+}
+</script>
 {% endblock %}
