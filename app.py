@@ -1,16 +1,19 @@
 import os
+
 import requests
 from dotenv import load_dotenv
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Flask, redirect, render_template, request, url_for
 
-load_dotenv()
 from data_manager import DataManager
 from models import db, Movie
+
+load_dotenv()
 
 app = Flask(__name__)
 
 basedir = os.path.abspath(os.path.dirname(__file__))
-app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(basedir, 'data/movies.db')}"
+db_path = os.path.join(basedir, 'data', 'movies.db')
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_app(app)
@@ -58,7 +61,9 @@ def user_movies(user_id):
     if user is None:
         return render_template('404.html'), 404
     movies = data_manager.get_movies(user_id)
-    return render_template('user_movies.html', movies=movies, user_id=user_id, user=user)
+    return render_template(
+        'user_movies.html', movies=movies, user_id=user_id, user=user
+    )
 
 
 @app.route('/users/<int:user_id>/movies', methods=['POST'])
@@ -83,7 +88,10 @@ def add_movie(user_id):
     return redirect(url_for('user_movies', user_id=user_id))
 
 
-@app.route('/users/<int:user_id>/movies/<int:movie_id>/update', methods=['POST'])
+@app.route(
+    '/users/<int:user_id>/movies/<int:movie_id>/update',
+    methods=['POST']
+)
 def update_movie(user_id, movie_id):
     name = request.form.get('name', '').strip()
     director = request.form.get('director', '').strip()
@@ -93,7 +101,10 @@ def update_movie(user_id, movie_id):
     return redirect(url_for('user_movies', user_id=user_id))
 
 
-@app.route('/users/<int:user_id>/movies/<int:movie_id>/delete', methods=['POST'])
+@app.route(
+    '/users/<int:user_id>/movies/<int:movie_id>/delete',
+    methods=['POST']
+)
 def delete_movie(user_id, movie_id):
     data_manager.delete_movie(movie_id)
     return redirect(url_for('user_movies', user_id=user_id))

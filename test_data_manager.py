@@ -42,8 +42,11 @@ class TestDataManager(unittest.TestCase):
         with self.app.app_context():
             self.dm.create_user('Alice')
             user = self.dm.get_users()[0]
-            movie = Movie(name='Jaws', director='Spielberg', year=1975,
-                          poster_url='http://example.com/jaws.jpg', user_id=user.id)
+            movie = Movie(
+                name='Jaws', director='Spielberg', year=1975,
+                poster_url='http://example.com/jaws.jpg',
+                user_id=user.id
+            )
             self.dm.add_movie(movie)
             movies = self.dm.get_movies(user.id)
             self.assertEqual(len(movies), 1)
@@ -60,8 +63,11 @@ class TestDataManager(unittest.TestCase):
         with self.app.app_context():
             self.dm.create_user('Alice')
             user = self.dm.get_users()[0]
-            movie = Movie(name='Jaws', director='Spielberg', year=1975,
-                          poster_url='http://example.com/jaws.jpg', user_id=user.id)
+            movie = Movie(
+                name='Jaws', director='Spielberg', year=1975,
+                poster_url='http://example.com/jaws.jpg',
+                user_id=user.id
+            )
             self.dm.add_movie(movie)
             movie_id = self.dm.get_movies(user.id)[0].id
             self.dm.update_movie(movie_id, 'Jaws 2', 'Jeannot Szwarc', 1978,
@@ -74,8 +80,11 @@ class TestDataManager(unittest.TestCase):
         with self.app.app_context():
             self.dm.create_user('Alice')
             user = self.dm.get_users()[0]
-            movie = Movie(name='Jaws', director='Spielberg', year=1975,
-                          poster_url='http://example.com/jaws.jpg', user_id=user.id)
+            movie = Movie(
+                name='Jaws', director='Spielberg', year=1975,
+                poster_url='http://example.com/jaws.jpg',
+                user_id=user.id
+            )
             self.dm.add_movie(movie)
             movie_id = self.dm.get_movies(user.id)[0].id
             self.dm.delete_movie(movie_id)

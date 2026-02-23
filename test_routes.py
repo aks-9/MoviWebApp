@@ -96,7 +96,9 @@ class TestRoutes(unittest.TestCase):
             db.session.add(User(name='Alice'))
             db.session.commit()
             user_id = User.query.first().id
-        response = self.client.post(f'/users/{user_id}/movies', data={'title': 'Alien'})
+        response = self.client.post(
+            f'/users/{user_id}/movies', data={'title': 'Alien'}
+        )
         self.assertEqual(response.status_code, 302)
         self.assertIn(f'/users/{user_id}/movies', response.headers['Location'])
 
@@ -140,7 +142,9 @@ class TestRoutes(unittest.TestCase):
             db.session.add(User(name='Alice'))
             db.session.commit()
             user_id = User.query.first().id
-        self.client.post(f'/users/{user_id}/movies', data={'title': 'Unknown Movie'})
+        self.client.post(
+            f'/users/{user_id}/movies', data={'title': 'Unknown Movie'}
+        )
         with app.app_context():
             movie = Movie.query.first()
             self.assertEqual(movie.name, 'Unknown Movie')
@@ -175,9 +179,9 @@ class TestRoutes(unittest.TestCase):
             db.session.add(movie)
             db.session.commit()
             user_id, movie_id = user.id, movie.id
-        response = self.client.post(f'/users/{user_id}/movies/{movie_id}/update', data={
-            'name': 'Jaws', 'director': '', 'year': '0', 'poster_url': ''
-        })
+        url = f'/users/{user_id}/movies/{movie_id}/update'
+        data = {'name': 'Jaws', 'director': '', 'year': '0', 'poster_url': ''}
+        response = self.client.post(url, data=data)
         self.assertEqual(response.status_code, 302)
 
     # --- Delete Movie ---
@@ -204,7 +208,8 @@ class TestRoutes(unittest.TestCase):
             db.session.add(movie)
             db.session.commit()
             user_id, movie_id = user.id, movie.id
-        response = self.client.post(f'/users/{user_id}/movies/{movie_id}/delete')
+        url = f'/users/{user_id}/movies/{movie_id}/delete'
+        response = self.client.post(url)
         self.assertEqual(response.status_code, 302)
 
 
