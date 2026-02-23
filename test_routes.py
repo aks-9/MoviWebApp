@@ -20,12 +20,12 @@ class TestRoutes(unittest.TestCase):
     # --- Home ---
 
     @patch('app.render_template', return_value='home page')
-    def test_home_returns_200(self, mock_render):
+    def test_index_returns_200(self, mock_render):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
 
     @patch('app.render_template', return_value='home page')
-    def test_home_passes_users_to_template(self, mock_render):
+    def test_index_passes_users_to_template(self, mock_render):
         with app.app_context():
             db.session.add(User(name='Alice'))
             db.session.commit()
@@ -36,19 +36,19 @@ class TestRoutes(unittest.TestCase):
 
     # --- Add User ---
 
-    def test_add_user_redirects_to_home(self):
+    def test_create_user_redirects_to_home(self):
         response = self.client.post('/users', data={'name': 'Alice'})
         self.assertEqual(response.status_code, 302)
         self.assertIn('/', response.headers['Location'])
 
-    def test_add_user_persists_to_db(self):
+    def test_create_user_persists_to_db(self):
         self.client.post('/users', data={'name': 'Alice'})
         with app.app_context():
             users = User.query.all()
             self.assertEqual(len(users), 1)
             self.assertEqual(users[0].name, 'Alice')
 
-    def test_add_user_empty_name_ignored(self):
+    def test_create_user_empty_name_ignored(self):
         self.client.post('/users', data={'name': '   '})
         with app.app_context():
             self.assertEqual(User.query.count(), 0)

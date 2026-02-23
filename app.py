@@ -36,17 +36,17 @@ def fetch_movie_data(title):
 
 
 @app.route('/')
-def home():
+def index():
     users = data_manager.get_users()
-    return render_template('home.html', users=users)
+    return render_template('index.html', users=users)
 
 
 @app.route('/users', methods=['POST'])
-def add_user():
+def create_user():
     name = request.form.get('name', '').strip()
     if name:
         data_manager.create_user(name)
-    return redirect(url_for('home'))
+    return redirect(url_for('index'))
 
 
 @app.route('/users/<int:user_id>/movies', methods=['GET'])
