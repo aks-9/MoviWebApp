@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Movie List</h1>
+
+{% if movies %}
+<ul>
+    {% for movie in movies %}
+    <li>
+        {% if movie.poster_url %}
+        <img src="{{ movie.poster_url }}" alt="{{ movie.name }} poster" width="100">
+        {% endif %}
+        <strong>{{ movie.name }}</strong>
+        ({{ movie.year }}) — Directed by {{ movie.director }}
+
+        <form action="{{ url_for('update_movie', user_id=user_id, movie_id=movie.id) }}" method="post" style="display:inline;">
+            <input type="text" name="name" value="{{ movie.name }}" required>
+            <input type="text" name="director" value="{{ movie.director }}">
+            <input type="number" name="year" value="{{ movie.year }}">
+            <input type="text" name="poster_url" value="{{ movie.poster_url }}">
+            <button type="submit">Update</button>
+        </form>
+
+        <form action="{{ url_for('delete_movie', user_id=user_id, movie_id=movie.id) }}" method="post" style="display:inline;">
+            <button type="submit">Delete</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No movies yet. Add one below!</p>
+{% endif %}
+
+<h2>Add a Movie</h2>
+<form action="{{ url_for('add_movie', user_id=user_id) }}" method="post">
+    <input type="text" name="title" placeholder="Enter movie title" required>
+    <button type="submit">Add Movie</button>
+</form>
+{% endblock %}
