@@ -24,6 +24,12 @@ OMDB_API_KEY = os.environ.get('OMDB_API_KEY', '')
 
 
 def fetch_movie_data(title):
+    """Fetch movie metadata from the OMDb API by title.
+
+    Returns a dict with keys 'name', 'director', 'year', and 'poster_url'
+    if the title is found, or None if the API key is missing or the title
+    is not found.
+    """
     if not OMDB_API_KEY:
         return None
     response = requests.get(
@@ -43,12 +49,14 @@ def fetch_movie_data(title):
 
 @app.route('/')
 def index():
+    """Render the home page with a list of all users."""
     users = data_manager.get_users()
     return render_template('index.html', users=users)
 
 
 @app.route('/users', methods=['POST'])
 def create_user():
+    """Create a new user from the submitted form and redirect to the home page."""
     name = request.form.get('name', '').strip()
     if name:
         data_manager.create_user(name)
@@ -57,6 +65,10 @@ def create_user():
 
 @app.route('/users/<int:user_id>/movies', methods=['GET'])
 def user_movies(user_id):
+    """Render the movie list page for a given user.
+
+    Returns a 404 response if the user does not exist.
+    """
     user = data_manager.get_user(user_id)
     if user is None:
         return render_template('404.html'), 404
@@ -68,6 +80,7 @@ def user_movies(user_id):
 
 @app.route('/users/<int:user_id>/movies', methods=['POST'])
 def add_movie(user_id):
+    """Add a new movie for a user, enriched with OMDb data when available."""
     title = request.form.get('title', '').strip()
     if not title:
         return redirect(url_for('user_movies', user_id=user_id))
@@ -93,6 +106,7 @@ def add_movie(user_id):
     methods=['POST']
 )
 def update_movie(user_id, movie_id):
+    """Update the details of an existing movie from the submitted form."""
     name = request.form.get('name', '').strip()
     director = request.form.get('director', '').strip()
     year = request.form.get('year', 0)
@@ -106,17 +120,20 @@ def update_movie(user_id, movie_id):
     methods=['POST']
 )
 def delete_movie(user_id, movie_id):
+    """Delete a movie and redirect to the user's movie list."""
     data_manager.delete_movie(movie_id)
     return redirect(url_for('user_movies', user_id=user_id))
 
 
 @app.errorhandler(404)
 def page_not_found(e):
+    """Render the 404 error page."""
     return render_template('404.html'), 404
 
 
 @app.errorhandler(500)
 def internal_server_error(e):
+    """Render the 500 error page."""
     return render_template('500.html'), 500
 
 
