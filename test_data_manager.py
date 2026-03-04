@@ -1,5 +1,7 @@
 import unittest
+
 from flask import Flask
+
 from models import db, Movie
 from data_manager import DataManager
 
